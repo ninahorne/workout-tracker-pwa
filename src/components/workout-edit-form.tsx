@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase';
@@ -26,16 +26,58 @@ interface WorkoutExercise {
   notes?: string;
 }
 
-interface WorkoutCreateFormProps {
+interface ExistingWorkoutExercise {
+  id: string;
+  exercise_id: string;
+  order_index: number;
+  target_sets: number;
+  target_reps: string;
+  rest_time: number | null;
+  notes: string | null;
+  exercises: {
+    id: string;
+    name: string;
+    primary_muscle_group: string;
+    secondary_muscle_groups: string[] | null;
+    exercise_type: string;
+    equipment: string | null;
+    is_system: boolean | null;
+  } | null;
+}
+
+interface Workout {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string | null;
+  user_id: string;
+  created_at: string;
+  updated_at: string | null;
+  last_used: string | null;
+}
+
+interface WorkoutEditFormProps {
+  workout: Workout;
+  workoutExercises: ExistingWorkoutExercise[];
   exercisesByMuscle: Record<string, Exercise[]>;
 }
 
-export default function WorkoutCreateForm({
+export default function WorkoutEditForm({
+  workout,
+  workoutExercises,
   exercisesByMuscle,
-}: WorkoutCreateFormProps) {
-  const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>(
-    [],
-  );
+}: WorkoutEditFormProps) {
+  // Convert existing workout exercises to the format used by the form
+  const initialExercises: WorkoutExercise[] = workoutExercises.map((we) => ({
+    exercise_id: we.exercise_id,
+    exercise_name: we.exercises?.name || 'Unknown Exercise',
+    sets: we.target_sets,
+    reps: parseInt(we.target_reps) || 0,
+    notes: we.notes || undefined,
+  }));
+
+  const [selectedExercises, setSelectedExercises] =
+    useState<WorkoutExercise[]>(initialExercises);
   const [showExerciseSelection, setShowExerciseSelection] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,27 +120,28 @@ export default function WorkoutCreateForm({
     const category = formData.get('category') as string;
 
     try {
-      // Get current user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      // Create workout
-      const { data: workout, error: workoutError } = await supabase
+      // Update workout
+      const { error: workoutError } = await supabase
         .from('workouts')
-        .insert({
+        .update({
           name,
           description: description || null,
           category: category || null,
-          user_id: user.id,
+          updated_at: new Date().toISOString(),
         })
-        .select()
-        .single();
+        .eq('id', workout.id);
 
       if (workoutError) throw workoutError;
 
-      // Create workout exercises
+      // Delete existing workout exercises
+      const { error: deleteError } = await supabase
+        .from('workout_exercises')
+        .delete()
+        .eq('workout_id', workout.id);
+
+      if (deleteError) throw deleteError;
+
+      // Create updated workout exercises
       if (selectedExercises.length > 0) {
         const workoutExercises = selectedExercises.map((exercise, index) => ({
           workout_id: workout.id,
@@ -116,12 +159,53 @@ export default function WorkoutCreateForm({
         if (exercisesError) throw exercisesError;
       }
 
-      // Redirect to workouts page
+      // Redirect to workout detail page
+      router.push(`/workouts/${workout.id}`);
+      router.refresh();
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : 'Failed to update workout',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (
+      !confirm(
+        'Are you sure you want to delete this workout? This action cannot be undone.',
+      )
+    ) {
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Delete workout exercises first (due to foreign key constraint)
+      const { error: exercisesError } = await supabase
+        .from('workout_exercises')
+        .delete()
+        .eq('workout_id', workout.id);
+
+      if (exercisesError) throw exercisesError;
+
+      // Delete the workout
+      const { error: workoutError } = await supabase
+        .from('workouts')
+        .delete()
+        .eq('id', workout.id);
+
+      if (workoutError) throw workoutError;
+
+      // Redirect to workouts list
       router.push('/workouts');
       router.refresh();
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : 'Failed to create workout',
+        error instanceof Error ? error.message : 'Failed to delete workout',
       );
     } finally {
       setIsLoading(false);
@@ -145,6 +229,7 @@ export default function WorkoutCreateForm({
           <input
             type="text"
             name="name"
+            defaultValue={workout.name}
             placeholder="ENTER WORKOUT NAME"
             className="w-full p-4 border-4 border-black font-bold text-black placeholder-gray-500 uppercase bg-yellow-200 focus:bg-yellow-100 focus:outline-none"
             required
@@ -160,6 +245,7 @@ export default function WorkoutCreateForm({
           </label>
           <textarea
             name="description"
+            defaultValue={workout.description || ''}
             placeholder="DESCRIBE YOUR WORKOUT..."
             rows={4}
             className="w-full p-4 border-4 border-black font-bold text-black placeholder-gray-500 uppercase bg-yellow-200 focus:bg-yellow-100 focus:outline-none resize-none"
@@ -175,6 +261,7 @@ export default function WorkoutCreateForm({
           </label>
           <select
             name="category"
+            defaultValue={workout.category || ''}
             className="w-full p-4 border-4 border-black font-bold text-black uppercase bg-yellow-200 focus:bg-yellow-100 focus:outline-none"
           >
             <option value="">SELECT CATEGORY</option>
@@ -284,6 +371,20 @@ export default function WorkoutCreateForm({
                       />
                     </div>
                   </div>
+                  <div className="mt-2">
+                    <label className="block text-xs font-bold text-black mb-1">
+                      NOTES
+                    </label>
+                    <input
+                      type="text"
+                      value={workoutExercise.notes || ''}
+                      onChange={(e) =>
+                        updateExerciseDetails(index, 'notes', e.target.value)
+                      }
+                      className="w-full p-2 border-2 border-black text-black font-bold bg-yellow-200 focus:bg-yellow-100"
+                      placeholder="OPTIONAL NOTES"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -351,14 +452,25 @@ export default function WorkoutCreateForm({
           className="w-full font-bold text-xl"
           disabled={isLoading || selectedExercises.length === 0}
         >
-          {isLoading ? 'CREATING...' : 'CREATE WORKOUT'}
+          {isLoading ? 'UPDATING...' : 'UPDATE WORKOUT'}
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          size="lg"
+          className="w-full font-bold text-xl"
+          onClick={handleDelete}
+          disabled={isLoading}
+        >
+          <TrashIcon className="h-5 w-5 mr-2" />
+          DELETE WORKOUT
         </Button>
         <Button
           type="button"
           variant="secondary"
           size="lg"
           className="w-full font-bold text-xl"
-          onClick={() => window.history.back()}
+          onClick={() => router.push(`/workouts/${workout.id}`)}
         >
           CANCEL
         </Button>
