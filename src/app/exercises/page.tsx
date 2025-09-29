@@ -1,9 +1,14 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+  PlusIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import DeleteExerciseButton from '@/components/delete-exercise-button';
 
 export default async function ExercisesPage() {
   const supabase = await createServerSupabaseClient();
@@ -100,15 +105,23 @@ export default async function ExercisesPage() {
                                   </div>
                                 )}
                             </div>
-                            <Link href={`/exercises/${exercise.id}`}>
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                className="ml-4 font-bold"
-                              >
-                                VIEW
-                              </Button>
-                            </Link>
+                            <div className="flex items-center space-x-2 ml-4">
+                              <Link href={`/exercises/${exercise.id}`}>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="font-bold"
+                                >
+                                  VIEW
+                                </Button>
+                              </Link>
+                              {!exercise.is_system && (
+                                <DeleteExerciseButton
+                                  exerciseId={exercise.id}
+                                  exerciseName={exercise.name}
+                                />
+                              )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
