@@ -51,7 +51,7 @@ interface Workout {
   description: string | null;
   category: string | null;
   user_id: string;
-  created_at: string;
+  created_at: string | null;
   updated_at: string | null;
   last_used: string | null;
 }
