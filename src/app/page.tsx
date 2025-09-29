@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function Home() {
   const supabase = await createServerSupabaseClient();
@@ -13,63 +15,81 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen bg-yellow-300 p-4">
       <div className="max-w-md mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back!
+        {/* Header with neobrutalism style */}
+        <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 mb-6">
+          <h1 className="text-4xl font-black text-black mb-2 uppercase tracking-tight">
+            💪 WORKOUT TRACKER
           </h1>
-          <p className="text-gray-600">Ready to start your workout?</p>
-        </header>
+          <p className="text-lg font-bold text-black">TIME TO GET SWOLE! 🔥</p>
+        </div>
 
         <div className="space-y-6">
           {/* Today's Workout Card */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Today&apos;s Workout
-            </h2>
-            <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">
-                No workout scheduled for today
-              </p>
-              <Link
-                href="/workouts"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Browse Workouts
-              </Link>
-            </div>
-          </div>
+          <Card variant="primary">
+            <CardHeader>
+              <CardTitle className="text-white text-2xl font-black uppercase">
+                🎯 TODAY&apos;S MISSION
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6">
+                <div className="text-6xl mb-4">💤</div>
+                <p className="text-white font-bold text-lg mb-6">
+                  NO WORKOUT SCHEDULED
+                </p>
+                <Link href="/workouts">
+                  <Button variant="success" size="lg" className="w-full">
+                    🏋️ FIND A WORKOUT
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Quick Stats */}
+          {/* Quick Stats with brutalist grid */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-sm font-medium text-gray-500">This Week</h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-              <p className="text-sm text-gray-500">Workouts</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-sm font-medium text-gray-500">Total</h3>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-              <p className="text-sm text-gray-500">Sessions</p>
-            </div>
+            <Card variant="accent">
+              <CardContent className="text-center p-4">
+                <div className="text-3xl font-black text-black">📅</div>
+                <div className="text-4xl font-black text-black">0</div>
+                <p className="font-bold text-black uppercase">This Week</p>
+              </CardContent>
+            </Card>
+            <Card variant="secondary">
+              <CardContent className="text-center p-4">
+                <div className="text-3xl font-black text-white">📊</div>
+                <div className="text-4xl font-black text-white">0</div>
+                <p className="font-bold text-white uppercase">Total</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Quick Actions */}
-          <div className="space-y-3">
-            <Link
-              href="/workouts"
-              className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Start Workout
+          {/* Action Grid */}
+          <div className="grid grid-cols-1 gap-4">
+            <Link href="/workouts" className="block">
+              <Button variant="danger" size="lg" className="w-full text-xl">
+                🚀 START WORKOUT
+              </Button>
             </Link>
-            <Link
-              href="/exercises"
-              className="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-            >
-              Browse Exercises
+            <Link href="/exercises" className="block">
+              <Button variant="default" size="lg" className="w-full text-xl">
+                📚 BROWSE EXERCISES
+              </Button>
             </Link>
           </div>
+
+          {/* Fun motivational section */}
+          <Card className="bg-green-400">
+            <CardContent className="text-center p-6">
+              <div className="text-4xl mb-2">🎯</div>
+              <p className="font-black text-xl text-black uppercase">
+                CONSISTENCY IS KEY!
+              </p>
+              <p className="font-bold text-black">Small steps, big gains! 💪</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

@@ -45,9 +45,9 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-yellow-300`}
       >
-        <main className={shouldShowBottomNav ? 'pb-16' : ''}>{children}</main>
+        <main className={shouldShowBottomNav ? 'pb-20' : ''}>{children}</main>
         {shouldShowBottomNav && <BottomNav />}
       </body>
     </html>

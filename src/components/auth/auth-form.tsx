@@ -46,18 +46,18 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        {isSignUp ? 'Sign Up' : 'Sign In'}
+    <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6">
+      <h1 className="text-3xl font-black text-center mb-6 uppercase text-black">
+        {isSignUp ? '🚀 JOIN THE CREW' : '💪 WELCOME BACK'}
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-lg font-black text-black uppercase mb-2"
           >
-            Email
+            📧 EMAIL
           </label>
           <input
             id="email"
@@ -65,16 +65,16 @@ export default function AuthForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border-4 border-black font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_#000] transition-all duration-75"
           />
         </div>
 
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-lg font-black text-black uppercase mb-2"
           >
-            Password
+            🔒 PASSWORD
           </label>
           <input
             id="password"
@@ -83,29 +83,33 @@ export default function AuthForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border-4 border-black font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_#000] transition-all duration-75"
           />
         </div>
 
-        {error && <div className="text-red-600 text-sm">{error}</div>}
+        {error && (
+          <div className="bg-red-400 border-4 border-black p-4 font-bold text-black">
+            ⚠️ {error}
+          </div>
+        )}
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full py-4 px-6 bg-green-400 border-4 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all duration-75 font-black text-xl text-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+          {isLoading ? '⏳ LOADING...' : isSignUp ? '🚀 SIGN UP' : '💪 SIGN IN'}
         </button>
       </form>
 
-      <div className="mt-4 text-center">
+      <div className="mt-6 text-center">
         <button
           onClick={() => setIsSignUp(!isSignUp)}
-          className="text-blue-600 hover:text-blue-500 text-sm"
+          className="text-black hover:underline font-bold text-lg uppercase"
         >
           {isSignUp
-            ? 'Already have an account? Sign in'
-            : "Don't have an account? Sign up"}
+            ? '👈 ALREADY A MEMBER? SIGN IN'
+            : '🆕 NEW HERE? JOIN THE CREW'}
         </button>
       </div>
     </div>
