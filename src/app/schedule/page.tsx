@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { PlusIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default async function SchedulePage() {
   const supabase = await createServerSupabaseClient();
@@ -42,61 +44,73 @@ export default async function SchedulePage() {
   );
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen bg-yellow-300 p-4">
       <div className="max-w-md mx-auto">
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Schedule</h1>
-          <Link
-            href="/schedule/create"
-            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <PlusIcon className="h-5 w-5" />
-          </Link>
+        <header className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-black text-black uppercase tracking-tight">
+              SCHEDULE
+            </h1>
+            <Link href="/schedule/create">
+              <button className="p-3 bg-green-400 border-4 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all duration-75 hover:bg-green-300">
+                <PlusIcon className="h-5 w-5 text-black" />
+              </button>
+            </Link>
+          </div>
         </header>
 
         {/* Today's Workouts */}
         {todayWorkouts && todayWorkouts.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Today</h2>
-            <div className="space-y-3">
+            <div className="bg-red-400 border-4 border-black shadow-[6px_6px_0px_0px_#000] p-4 mb-4">
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                TODAY
+              </h2>
+            </div>
+            <div className="space-y-4">
               {todayWorkouts.map((scheduled) => (
-                <div
-                  key={scheduled.id}
-                  className="bg-blue-50 border border-blue-200 rounded-lg p-4"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        {scheduled.workouts?.name || 'Unnamed Workout'}
-                      </h3>
-                      {scheduled.workouts?.category && (
-                        <span className="text-xs text-blue-600">
-                          {scheduled.workouts.category}
-                        </span>
-                      )}
-                      <p className="text-sm text-gray-600 mt-1">
-                        {new Date(scheduled.scheduled_date).toLocaleTimeString(
-                          'en-US',
-                          {
+                <Card key={scheduled.id} variant="primary">
+                  <CardContent className="p-5">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-black text-white text-lg uppercase">
+                          {scheduled.workouts?.name || 'UNNAMED WORKOUT'}
+                        </h3>
+                        {scheduled.workouts?.category && (
+                          <span className="text-sm font-bold bg-yellow-400 text-black border-2 border-black px-2 py-1 mt-2 inline-block uppercase">
+                            {scheduled.workouts.category}
+                          </span>
+                        )}
+                        <p className="text-white font-bold mt-2">
+                          {new Date(
+                            scheduled.scheduled_date,
+                          ).toLocaleTimeString('en-US', {
                             hour: '2-digit',
                             minute: '2-digit',
-                          },
-                        )}
-                      </p>
+                          })}
+                        </p>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <Link href={`/workouts/${scheduled.workout_id}/start`}>
+                          <Button
+                            variant="success"
+                            size="sm"
+                            className="font-bold w-full"
+                          >
+                            START
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="font-bold"
+                        >
+                          SKIP
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex space-x-2">
-                      <Link
-                        href={`/workouts/${scheduled.workout_id}/start`}
-                        className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
-                      >
-                        Start
-                      </Link>
-                      <button className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded hover:bg-gray-200">
-                        Skip
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
@@ -105,80 +119,91 @@ export default async function SchedulePage() {
         {/* Upcoming Workouts */}
         {upcomingWorkouts && upcomingWorkouts.length > 0 ? (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
-              Upcoming
-            </h2>
-            <div className="space-y-3">
+            <div className="bg-purple-400 border-4 border-black shadow-[6px_6px_0px_0px_#000] p-4 mb-4">
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                UPCOMING
+              </h2>
+            </div>
+            <div className="space-y-4">
               {upcomingWorkouts.map((scheduled) => (
-                <div
-                  key={scheduled.id}
-                  className="bg-white rounded-lg shadow-md p-4"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium text-gray-900">
-                        {scheduled.workouts?.name || 'Unnamed Workout'}
-                      </h3>
-                      {scheduled.workouts?.category && (
-                        <span className="text-xs text-gray-600">
-                          {scheduled.workouts.category}
-                        </span>
-                      )}
-                      <p className="text-sm text-gray-600 mt-1">
-                        {new Date(scheduled.scheduled_date).toLocaleDateString(
-                          'en-US',
-                          {
+                <Card key={scheduled.id} className="bg-white">
+                  <CardContent className="p-5">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-black text-lg uppercase">
+                          {scheduled.workouts?.name || 'UNNAMED WORKOUT'}
+                        </h3>
+                        {scheduled.workouts?.category && (
+                          <span className="text-sm font-bold bg-yellow-400 text-black border-2 border-black px-2 py-1 mt-2 inline-block uppercase">
+                            {scheduled.workouts.category}
+                          </span>
+                        )}
+                        <p className="text-black font-bold mt-2 uppercase">
+                          {new Date(
+                            scheduled.scheduled_date,
+                          ).toLocaleDateString('en-US', {
                             weekday: 'short',
                             month: 'short',
                             day: 'numeric',
-                          },
-                        )}{' '}
-                        at{' '}
-                        {new Date(scheduled.scheduled_date).toLocaleTimeString(
-                          'en-US',
-                          {
+                          })}{' '}
+                          AT{' '}
+                          {new Date(
+                            scheduled.scheduled_date,
+                          ).toLocaleTimeString('en-US', {
                             hour: '2-digit',
                             minute: '2-digit',
-                          },
-                        )}
-                      </p>
+                          })}
+                        </p>
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="font-bold"
+                      >
+                        EDIT
+                      </Button>
                     </div>
-                    <button className="text-sm text-blue-600 hover:text-blue-800">
-                      Edit
-                    </button>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
         ) : (
           !todayWorkouts?.length && (
-            <div className="text-center py-12">
-              <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No scheduled workouts
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Schedule your workouts to stay consistent
-              </p>
-              <Link
-                href="/schedule/create"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-              >
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Schedule Workout
-              </Link>
-            </div>
+            <Card variant="accent" className="text-center p-8">
+              <CardContent>
+                <CalendarIcon className="h-16 w-16 text-black mx-auto mb-4" />
+                <h3 className="text-2xl font-black text-black mb-4 uppercase">
+                  NO SCHEDULED WORKOUTS!
+                </h3>
+                <p className="text-black font-bold mb-6 uppercase">
+                  Schedule your workouts to stay consistent
+                </p>
+                <Link href="/schedule/create">
+                  <Button
+                    variant="success"
+                    size="lg"
+                    className="inline-flex items-center"
+                  >
+                    <PlusIcon className="h-5 w-5 mr-2" />
+                    SCHEDULE WORKOUT
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           )
         )}
 
         {/* Quick Actions */}
-        <div className="space-y-3">
-          <Link
-            href="/schedule/calendar"
-            className="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-          >
-            View Calendar
+        <div className="space-y-4 mt-8">
+          <Link href="/schedule/calendar">
+            <Button
+              variant="default"
+              size="lg"
+              className="w-full font-bold text-xl"
+            >
+              VIEW CALENDAR
+            </Button>
           </Link>
         </div>
       </div>

@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default async function ExercisesPage() {
   const supabase = await createServerSupabaseClient();
@@ -32,20 +34,23 @@ export default async function ExercisesPage() {
   }, {} as Record<string, typeof exercises>);
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen bg-yellow-300 p-4">
       <div className="max-w-md mx-auto">
-        <header className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Exercises</h1>
-          <div className="flex space-x-2">
-            <button className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
-              <MagnifyingGlassIcon className="h-5 w-5" />
-            </button>
-            <Link
-              href="/exercises/create"
-              className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <PlusIcon className="h-5 w-5" />
-            </Link>
+        <header className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000] p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-black text-black uppercase tracking-tight">
+              EXERCISES
+            </h1>
+            <div className="flex space-x-3">
+              <button className="p-3 bg-purple-400 border-4 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all duration-75 hover:bg-purple-300">
+                <MagnifyingGlassIcon className="h-5 w-5 text-black" />
+              </button>
+              <Link href="/exercises/create">
+                <button className="p-3 bg-green-400 border-4 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] transition-all duration-75 hover:bg-green-300">
+                  <PlusIcon className="h-5 w-5 text-black" />
+                </button>
+              </Link>
+            </div>
           </div>
         </header>
 
@@ -54,58 +59,59 @@ export default async function ExercisesPage() {
             {Object.entries(exercisesByMuscle).map(
               ([muscleGroup, exercises]) => (
                 <div key={muscleGroup}>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3 capitalize">
-                    {muscleGroup}
-                  </h2>
-                  <div className="space-y-2">
+                  <div className="bg-blue-400 border-4 border-black shadow-[6px_6px_0px_0px_#000] p-4 mb-4">
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                      {muscleGroup}
+                    </h2>
+                  </div>
+                  <div className="space-y-4">
                     {exercises.map((exercise) => (
-                      <div
-                        key={exercise.id}
-                        className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">
-                              {exercise.name}
-                              {!exercise.is_system && (
-                                <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded">
-                                  Custom
+                      <Card key={exercise.id} className="bg-white">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-black text-lg">
+                                {exercise.name}
+                                {!exercise.is_system && (
+                                  <span className="ml-2 px-2 py-1 text-xs bg-green-400 text-black border-2 border-black font-bold uppercase">
+                                    Custom
+                                  </span>
+                                )}
+                              </h3>
+                              <div className="flex items-center mt-2 space-x-3">
+                                <span className="text-sm text-black font-bold uppercase border-2 border-black px-2 py-1 bg-yellow-400">
+                                  {exercise.exercise_type}
                                 </span>
-                              )}
-                            </h3>
-                            <div className="flex items-center mt-1 space-x-2">
-                              <span className="text-xs text-gray-500 capitalize">
-                                {exercise.exercise_type}
-                              </span>
-                              {exercise.equipment && (
-                                <>
-                                  <span className="text-gray-300">•</span>
-                                  <span className="text-xs text-gray-500">
+                                {exercise.equipment && (
+                                  <span className="text-sm text-black font-bold uppercase border-2 border-black px-2 py-1 bg-purple-400">
                                     {exercise.equipment}
                                   </span>
-                                </>
-                              )}
+                                )}
+                              </div>
+                              {exercise.secondary_muscle_groups &&
+                                exercise.secondary_muscle_groups.length > 0 && (
+                                  <div className="mt-2">
+                                    <span className="text-sm font-bold text-black">
+                                      SECONDARY:{' '}
+                                      {exercise.secondary_muscle_groups
+                                        .join(', ')
+                                        .toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
                             </div>
-                            {exercise.secondary_muscle_groups &&
-                              exercise.secondary_muscle_groups.length > 0 && (
-                                <div className="mt-1">
-                                  <span className="text-xs text-gray-500">
-                                    Secondary:{' '}
-                                    {exercise.secondary_muscle_groups.join(
-                                      ', ',
-                                    )}
-                                  </span>
-                                </div>
-                              )}
+                            <Link href={`/exercises/${exercise.id}`}>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="ml-4 font-bold"
+                              >
+                                VIEW
+                              </Button>
+                            </Link>
                           </div>
-                          <Link
-                            href={`/exercises/${exercise.id}`}
-                            className="text-sm text-blue-600 hover:text-blue-800 ml-4"
-                          >
-                            View
-                          </Link>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -113,21 +119,26 @@ export default async function ExercisesPage() {
             )}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No exercises found
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Create your first custom exercise to get started
-            </p>
-            <Link
-              href="/exercises/create"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Create Exercise
-            </Link>
-          </div>
+          <Card variant="accent" className="text-center p-8">
+            <CardContent>
+              <h3 className="text-2xl font-black text-black mb-4 uppercase">
+                NO EXERCISES FOUND!
+              </h3>
+              <p className="text-black font-bold mb-6 uppercase">
+                Create your first custom exercise to get started
+              </p>
+              <Link href="/exercises/create">
+                <Button
+                  variant="success"
+                  size="lg"
+                  className="inline-flex items-center"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  CREATE EXERCISE
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>
