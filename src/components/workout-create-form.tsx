@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { createClient } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 interface Exercise {
   id: string;
@@ -35,6 +37,10 @@ export default function WorkoutCreateForm({
     [],
   );
   const [showExerciseSelection, setShowExerciseSelection] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
 
   const addExercise = (exercise: Exercise) => {
     const newWorkoutExercise: WorkoutExercise = {
@@ -59,6 +65,67 @@ export default function WorkoutCreateForm({
     const updated = [...selectedExercises];
     updated[index] = { ...updated[index], [field]: value };
     setSelectedExercises(updated);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
+    const category = formData.get('category') as string;
+
+    try {
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Create workout
+      const { data: workout, error: workoutError } = await supabase
+        .from('workouts')
+        .insert({
+          name,
+          description: description || null,
+          category: category || null,
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (workoutError) throw workoutError;
+
+      // Create workout exercises
+      if (selectedExercises.length > 0) {
+        const workoutExercises = selectedExercises.map((exercise, index) => ({
+          workout_id: workout.id,
+          exercise_id: exercise.exercise_id,
+          order_index: index,
+          target_sets: exercise.sets,
+          target_reps: exercise.reps.toString(),
+          notes: exercise.notes || null,
+        }));
+
+        const { error: exercisesError } = await supabase
+          .from('workout_exercises')
+          .insert(workoutExercises);
+
+        if (exercisesError) throw exercisesError;
+      }
+
+      // Redirect to workouts page
+      router.push('/workouts');
+      router.refresh();
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : 'Failed to create workout',
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
