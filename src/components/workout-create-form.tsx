@@ -9,10 +9,10 @@ interface Exercise {
   id: string;
   name: string;
   primary_muscle_group: string;
-  secondary_muscle_groups: string[];
+  secondary_muscle_groups: string[] | null;
   exercise_type: string;
-  equipment: string;
-  is_system: boolean;
+  equipment: string | null;
+  is_system: boolean | null;
 }
 
 interface WorkoutExercise {
