@@ -1,11 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  PencilIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import DeleteExerciseButton from '@/components/delete-exercise-button';

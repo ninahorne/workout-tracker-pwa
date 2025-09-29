@@ -54,7 +54,7 @@ export default function WorkoutCreateForm({
   const updateExerciseDetails = (
     index: number,
     field: keyof WorkoutExercise,
-    value: any,
+    value: string | number | undefined,
   ) => {
     const updated = [...selectedExercises];
     updated[index] = { ...updated[index], [field]: value };
