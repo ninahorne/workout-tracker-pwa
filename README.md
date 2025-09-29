@@ -82,22 +82,39 @@ DATABASE_URL=your_database_connection_string
 
 ### Deploy to Vercel
 
-1. **Push to GitHub:**
+1. **Set up Production Supabase:**
+   - Create a new project at [supabase.com](https://supabase.com)
+   - Get your project credentials (URL, anon key, service role key)
+
+2. **Create production environment file:**
+   ```bash
+   cp .env.production.example .env.production
+   # Edit .env.production with your actual Supabase credentials
+   ```
+
+3. **Sync environment variables to Vercel:**
+   ```bash
+   # Login to Vercel first
+   npx vercel login
+   
+   # Sync all variables from .env.production to Vercel
+   pnpm sync-env
+   ```
+
+   **🎯 Automatic Sync**: Environment variables are automatically synced when you push to `main` branch thanks to Husky pre-push hooks!
+
+4. **Push to GitHub and deploy:**
    ```bash
    git add .
    git commit -m "Initial commit"
    git push origin main
    ```
 
-2. **Deploy to Vercel:**
-   - Connect your GitHub repository to Vercel
-   - Configure environment variables in Vercel dashboard
-   - Deploy automatically on every push
-
-3. **Set up Production Supabase:**
-   - Create a new project at [supabase.com](https://supabase.com)
-   - Run migrations: `npx supabase db push`
-   - Update environment variables in Vercel
+5. **Run database migrations:**
+   ```bash
+   npx supabase link --project-ref your-project-ref
+   npx supabase db push
+   ```
 
 ### PWA Installation
 
@@ -120,6 +137,11 @@ npx supabase start      # Start local Supabase
 npx supabase stop       # Stop local Supabase
 npx supabase db reset   # Reset database with fresh migrations
 npx supabase gen types typescript --local > src/lib/database.types.ts  # Generate types
+
+# Environment Variable Sync
+pnpm sync-env           # Sync .env.production to Vercel (interactive)
+pnpm sync-env:safe      # Sync with better error handling (for hooks)
+pnpm sync-env:bash      # Bash version of sync script
 ```
 
 ## Project Structure
