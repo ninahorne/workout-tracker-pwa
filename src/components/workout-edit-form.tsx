@@ -31,7 +31,7 @@ interface ExistingWorkoutExercise {
   exercise_id: string;
   order_index: number;
   target_sets: number;
-  target_reps: string;
+  target_reps: string | null;
   rest_time: number | null;
   notes: string | null;
   exercises: {
@@ -72,7 +72,7 @@ export default function WorkoutEditForm({
     exercise_id: we.exercise_id,
     exercise_name: we.exercises?.name || 'Unknown Exercise',
     sets: we.target_sets,
-    reps: parseInt(we.target_reps) || 0,
+    reps: parseInt(we.target_reps || '0') || 0,
     notes: we.notes || undefined,
   }));
 
@@ -456,7 +456,7 @@ export default function WorkoutEditForm({
         </Button>
         <Button
           type="button"
-          variant="destructive"
+          variant="danger"
           size="lg"
           className="w-full font-bold text-xl"
           onClick={handleDelete}
