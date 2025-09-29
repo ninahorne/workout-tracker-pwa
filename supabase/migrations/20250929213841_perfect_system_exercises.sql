@@ -46,6 +46,5 @@ INSERT INTO exercises (id, user_id, name, primary_muscle_group, secondary_muscle
 (gen_random_uuid(), NULL, 'Leg Press', 'Quadriceps', ARRAY['Glutes'], 'compound', 'Leg Press Machine', 'Machine-based leg exercise', true),
 (gen_random_uuid(), NULL, 'Smith Machine Squat', 'Quadriceps', ARRAY['Glutes', 'Hamstrings'], 'compound', 'Smith Machine', 'Guided squat movement', true),
 (gen_random_uuid(), NULL, 'Sumo Squat', 'Quadriceps', ARRAY['Glutes', 'Inner Thighs'], 'compound', 'Dumbbells', 'Wide stance squat variation', true),
-(gen_random_uuid(), NULL, 'Leg Extension', 'Quadriceps', ARRAY[]::TEXT[], 'isolation', 'Machine', 'Machine leg extensions for quadriceps isolation', true);
-
 (gen_random_uuid(), NULL, 'Split Squat', 'Quadriceps', ARRAY['Glutes', 'Hamstrings'], 'compound', 'Dumbbells', 'Stationary lunge position squat', true),
+(gen_random_uuid(), NULL, 'Leg Extension', 'Quadriceps', ARRAY[]::TEXT[], 'isolation', 'Machine', 'Machine leg extensions for quadriceps isolation', true);
