@@ -6,10 +6,10 @@ export default function LoginPage() {
       <div className="max-w-md mx-auto w-full">
         <div className="bg-white border-4 border-black shadow-[12px_12px_0px_0px_#000] p-8 mb-8">
           <h2 className="text-center text-5xl font-black text-black uppercase tracking-tight mb-4">
-            💪 WORKOUT TRACKER
+            WORKOUT TRACKER
           </h2>
           <p className="text-center text-xl font-bold text-black uppercase">
-            GET SWOLE OR GO HOME! 🔥
+            TRACK YOUR PROGRESS
           </p>
         </div>
         <AuthForm />
